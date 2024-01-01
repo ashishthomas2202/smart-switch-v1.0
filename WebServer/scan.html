@@ -1,51 +1,4 @@
-#include <Arduino.h>
-#include "WebServerModule.h"
-#include "WifiManager.h"
-
-WebServer server(80);
-
-// Declare handler functions
-void handleRoot(){
-  Serial.println("Root Route");
-  const char* htmlContent = R"rawliteral(
-    <!DOCTYPE html><html><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width" /><title>Smart Switch | Qsense</title>
-    </head><style>*{margin:0;padding:0;box-sizing:border-box;}html,body{width:100vw;height:100vh;font-family:sans-serif;background-color:#f0f0f0;overflow:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center;}.container{width:calc(100% - 40px);max-width:600px;padding:20px;background-color:#ffffff;border-radius:15px;display:flex;flex-direction:column;justify-content:space-around;align-items:center;gap:40px;}h1,h3,p{text-align:center;}h1{font-size:3rem;color:#232323;}
-    h3{font-size:1.4rem;}p{margin:20px auto;}form{width:100%;}button{background-color:#4CAF50;border:none;border-radius:5px;color:#fff;cursor:pointer;display:block;font-size:1.2rem;margin:0 auto;padding:10px;width:100%;max-width:400px;}button:hover{background-color:#3e8e41;}
-    </style><body><div class="container"><h1>Qsense</h1><div class="content"><h3>Lets Connect your Smart Switch</h3><p>We will guide you through the steps to connect the smart switch to your Wi-Fi network.</p></div>
-    <form action="/scan" method="GET"><button>Begin</button></form></div></body>
-    </html>)rawliteral";
-
-  server.send(200, "text/html", htmlContent);
-}
-
-void getWiFi(){
-  Serial.println("WiFi Scan Route");
-  
-  // Scans the network
-  const int maxSize = 20; 
-  String networks[maxSize];
-  
-  int totalNetworks = scanWiFiNetworks(networks);
-
-  // Start JSON string
-  String jsonResponse = "{\"totalNetworks\": " + String(totalNetworks) + ",\"networks\": [";
-
-  // Add networks to JSON
-  for (int i = 0; i < totalNetworks; ++i) {
-    jsonResponse += "\"" + networks[i] + "\"";
-    if (i < totalNetworks - 1) {
-      jsonResponse += ", "; // Add comma between networks
-    }
-  }
-
-  jsonResponse += "]}"; // Close JSON string
-
-  server.send(200, "application/json", jsonResponse);
-}
-
-void handleWiFiScan(){
-
-  const char* htmlContent = R"rawliteral(<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8" />
@@ -265,11 +218,12 @@ void handleWiFiScan(){
                     // Check the connection status and respond accordingly
                     if (response.status === 'connected') {
                         alert("Successfully connected to Wi-Fi network.");
+                        window.location.href = "/login";
                         // Additional actions on successful connection
                     } else {
                         alert("Failed to connect to Wi-Fi network.");
                         // Additional actions on failure to connect
-                        scan()
+                        scan();
                     }
                 } else {
                     // Handle HTTP error
@@ -298,67 +252,4 @@ void handleWiFiScan(){
         </div>
     </div>
 </body>
-</html>)rawliteral";
-
-  server.send(200, "text/html", htmlContent);
-}
-
-void handleWiFiConnect(){
-  Serial.println("WiFi Connect Route");
-
-  if (server.hasArg("ssid") && server.hasArg("password")) {
-        String ssid = server.arg("ssid");
-        String password = server.arg("password");
-
-        Serial.println("SSID: " + ssid);
-        Serial.println("Password: " + password);
-  
-        bool result = connectWiFi(ssid, password);
-        String jsonResponse;
-
-        if(result)
-          jsonResponse = "{\"status\":\"connected\"}";
-        else
-          jsonResponse ="{\"status\":\"disconnected\"}";
-
-        server.send(200, "application/json",jsonResponse);
-    }
-    else {
-        // If ssid or password is missing, send an error message
-        server.send(400, "application/json", "{\"status\":\"missing ssid or password\"}");
-    }   
-}
-
-void handleNotFound(){
-  Serial.println("Not Found : 404");
-  server.send(404,"text/plain","404: Not Found");
-}
-
-// Declare List of Web routes
-void WebRoutes(){
-  server.on("/", HTTP_GET, handleRoot);
-  server.on("/scan", HTTP_GET, handleWiFiScan);
-  server.on("/getWifi", HTTP_GET, getWiFi);
-  server.on("/connect", HTTP_POST, handleWiFiConnect);
-  server.onNotFound(handleNotFound);
-}
-
-void startWebServer(){
-
-  WebRoutes(); // initialize all the routes
-  server.begin();
-
-  Serial.println("Web Server started");
-  delay(2000);
-}
-
-void stopWebServer(){
-  server.stop();
-  Serial.println("Web Server stopped");
-}
-
-void handleWebServer(){
-  server.handleClient();
-}
-
-
+</html>

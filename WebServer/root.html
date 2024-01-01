@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Smart Switch | Qsense</title>
+</head>
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    html,   
+    body {
+        width: 100vw;
+        height: 100vh;
+        font-family: sans-serif;
+        background-color: #f0f0f0;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .container {
+        width: calc(100% - 40px);
+        max-width: 600px;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 15px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: center;
+        gap: 40px;
+    }
+   
+    h1,h3,p{
+        text-align: center;
+    }
+   
+     h1{
+        font-size: 3rem;
+        color: #232323;
+    }
+
+    h3{
+        font-size: 1.4rem;
+    }
+
+    p{
+        margin: 20px auto;
+        }
+   
+    form{
+        width: 100%;
+    }
+    button {
+        background-color: #4CAF50;
+        border: none;
+        border-radius: 5px;
+        color: #fff;
+        cursor: pointer;
+        display: block;
+        font-size: 1.2rem;
+        margin: 0 auto;
+        padding: 10px;
+        width: 100%;
+        max-width: 400px;
+    }
+    button:hover {
+        background-color: #3e8e41;
+    }
+</style>
+<body>
+    <div class="container">
+    
+        <h1>Qsense</h1>
+   
+        <div class="content">
+            <h3>Lets Connect your Smart Switch</h3>
+            <p>We will guide you through the steps to connect the smart switch to your Wi-Fi newtwork.</p>
+        </div>
+
+        <form action="/scan" method="GET">
+            <button>Begin</button>
+        </form>
+    </div>
+</body>
+</html
